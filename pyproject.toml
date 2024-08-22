@@ -30,5 +30,8 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
 ]
 
+[tool.setuptools.dynamic]
+version = {attr = "mkdocs_madlibs.__version__"}
+
 [project.urls]
 Repository = "https://github.com/samgaudet/mkdocs-madlibs.git"
