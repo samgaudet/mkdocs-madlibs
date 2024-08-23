@@ -40,7 +40,7 @@ extra_css:
 ## Utilization
 
 Once configured, `mkdocs-madlibs` custom fences are a breeze to use.
-Fenced code is defined using three backticks (```) as normal.
+Fenced code is defined using three backticks (\`\`\`) as normal.
 Within the fenced code, the language to use for highlighting is defined first, followed by three tildes (~~~).
 Following the language and three tildes (~~~), the code content to display is included.
 `mkdocs-madlibs` uses triple-underscores (affectionately known as '_trunder_ syntax') to denote items that should be a user input.

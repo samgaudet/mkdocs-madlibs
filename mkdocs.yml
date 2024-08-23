@@ -1,7 +1,26 @@
-site_name: MkDocs Madlibs
+site_name: MkDocs Mad Libs
 site_url: https://mkdocs-madlibs.readthedocs.io/en/latest/
+
+repo_url: https://github.com/samgaudet/mkdocs-madlibs
+repo_name: samgaudet/mkdocs-madlibs
+
 theme:
   name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
   features:
     - content.code.copy
 nav:

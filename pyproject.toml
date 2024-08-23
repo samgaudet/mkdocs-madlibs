@@ -34,4 +34,8 @@ classifiers = [
 version = {attr = "mkdocs_madlibs.__version__"}
 
 [project.urls]
+Homepage = "http://mkdocs-madlibs.readthedocs.io/"
+Documentation = "http://mkdocs-madlibs.readthedocs.io/"
 Repository = "https://github.com/samgaudet/mkdocs-madlibs.git"
+Issues = "https://github.com/samgaudet/mkdocs-madlibs/issues"
+Changelog = "https://github.com/samgaudet/mkdocs-madlibs/blob/main/CHANGELOG.md"
