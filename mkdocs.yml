@@ -1,0 +1,25 @@
+site_name: MkDocs Madlibs
+site_url: https://mkdocs-madlibs.readthedocs.io/en/latest/
+theme:
+  name: material
+  features:
+    - content.code.copy
+nav:
+  - Home: index.md
+  - Usage: usage.md
+extra_javascript:
+  - javascripts/extra.js
+extra_css:
+  - stylesheets/extra.css
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: madlibs
+          class: madlibs
+          format: !!python/name:mkdocs_madlibs.fence

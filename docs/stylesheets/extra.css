@@ -1,0 +1,11 @@
+.highlight .madlibs-editable {
+    color: var(--md-primary-fg-color);
+    font-style: italic;
+    font-weight: bold;
+    border-bottom: 0.15em dotted var(--md-primary-fg-color);
+    background-image: url("data:image/svg+xml; utf8, <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d=\"M290.7 93.2l128 128-278 278-114.1 12.6C11.4 513.5-1.6 500.6 .1 485.3l12.7-114.2 277.9-277.9zm207.2-19.1l-60.1-60.1c-18.8-18.8-49.2-18.8-67.9 0l-56.6 56.6 128 128 56.6-56.6c18.8-18.8 18.8-49.2 0-67.9z\"/></svg>");
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 0.8em 0.8em;
+    padding-right: 1.2em;
+}
