@@ -1,12 +1,50 @@
 import copy
 import re
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, PageElement, NavigableString
 from pymdownx.highlight import Highlight
 
 TRIPLE_UNDERSCORE = "___"
-TRIPLE_UNDERSCORE_WORD_PATTERN = re.compile(r'(___.*?___)')
+TRIPLE_UNDERSCORE_WORD_PATTERN = re.compile(r"(___.*?___)")
 MADLIBS_EDITABLE_CLASS = "madlibs-editable"
+
+
+def prepare_madlibs_element(
+    element: PageElement,
+    substring: str,
+) -> PageElement:
+    """Prepare the MkDocs Madlibs element, including
+    - Strip the element's content of triple underscores.
+    - Set the `title` to the Tag as a tooltip for users.
+    - Add the `madlibs-editable` CSS class to the Tag.
+    - Set the `contenteditable` attribute to `true` to allow user editing.
+    - Set the `onClick` behavior to select all text when clicked.
+    - Set `spellcheck` to `false` to avoid visual bugs with spelling errors.
+
+    Args:
+        element (PageElement):
+        substring (str):
+
+    Returns:
+        The updated PageElement to be added to a Soup.
+    """
+    element.string = substring.replace(TRIPLE_UNDERSCORE, "")
+    element["title"] = f"Edit {substring.replace(TRIPLE_UNDERSCORE, '')}"
+    if getattr(element, "class"):
+        # if there are already CSS classes present:
+        # add list to avoid mutating the underlying list,
+        # which would affect other copies
+        element["class"] = element["class"] + [MADLIBS_EDITABLE_CLASS]
+    else:
+        element["class"] = [MADLIBS_EDITABLE_CLASS]
+    element["contenteditable"] = "true"
+    # select all text on click; stolen from:
+    # https://stackoverflow.com/a/3805897
+    element["onClick"] = "document.execCommand('selectAll',false,null)"
+    element["spellcheck"] = "false"
+
+    return element
+
 
 def modify_code_block_html(html: str) -> str:
     """Modifies a superfences code block HTML.
@@ -18,45 +56,60 @@ def modify_code_block_html(html: str) -> str:
     Returns the modified HTML of the code block as a str.
     """
     soup = BeautifulSoup(html, "html.parser")
-    spans = soup.find_all("span")
+    code = soup.find("code")
 
-    for span in spans:
-        if span.string and TRIPLE_UNDERSCORE in span.string:
-            substrings = TRIPLE_UNDERSCORE_WORD_PATTERN.split(span.string)
+    for element in code.contents:
+        if isinstance(
+            element, NavigableString
+        ) and TRIPLE_UNDERSCORE_WORD_PATTERN.search(element):
+            substrings = TRIPLE_UNDERSCORE_WORD_PATTERN.split(element)
 
             # iterate over the reversed list of substrings
             # so they are added 'in order' when using `insert_after`
             for substring in reversed(substrings):
-                duplicated_span = copy.copy(span)
+                # annoyingly, we have to check for empty substrings
+                if substring and substring.startswith(TRIPLE_UNDERSCORE):
+                    new_span = soup.new_tag("span")
+                    new_span = prepare_madlibs_element(new_span, substring)
+                    element.insert_after(new_span)
+                elif substring:
+                    new_element = NavigableString(substring)
+                    element.insert_after(new_element)
+                else:
+                    pass
+
+            # remove the original span that has been split
+            element.extract()
+
+        elif (
+            element.name == "span"
+            and element.string
+            and TRIPLE_UNDERSCORE_WORD_PATTERN.search(element.string)
+        ):
+            substrings = TRIPLE_UNDERSCORE_WORD_PATTERN.split(element.string)
+
+            # iterate over the reversed list of substrings
+            # so they are added 'in order' when using `insert_after`
+            for substring in reversed(substrings):
+                duplicated_span = copy.copy(element)
 
                 if substring.startswith(TRIPLE_UNDERSCORE):
-                    # add the madlibs custom CSS classes
-                    # add list to avoid mutating the underlying list,
-                    # which would affect other copies
-                    duplicated_span["class"] = (
-                        duplicated_span["class"] + [MADLIBS_EDITABLE_CLASS]
+                    duplicated_span = prepare_madlibs_element(
+                        duplicated_span, substring
                     )
-                    # make the text user-editable
-                    duplicated_span["contenteditable"] = "true"
-                    # select all text on click; stolen from:
-                    # https://stackoverflow.com/a/3805897
-                    duplicated_span["onClick"] = "document.execCommand('selectAll',false,null)"
-                    # disable spellcheck for the contenteditable
-                    duplicated_span["spellcheck"] = "false"
-                    # add a tooltip for users:
-                    duplicated_span["title"] = f"Edit {substring.replace(TRIPLE_UNDERSCORE, '')}"
-                    # use the trunder placeholder for the initial span content
-                    duplicated_span.string = substring.replace(TRIPLE_UNDERSCORE, "")
                 else:
                     duplicated_span.string = substring
 
-                span.insert_after(duplicated_span)
+                element.insert_after(duplicated_span)
 
             # remove the original span that has been split
-            span.extract()
+            element.extract()
+        else:
+            pass
 
     modified_html = str(soup.prettify())
     return modified_html
+
 
 def fence(
     source: str,
