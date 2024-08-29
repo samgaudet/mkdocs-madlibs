@@ -22,8 +22,9 @@ def prepare_madlibs_element(
     - Set `spellcheck` to `false` to avoid visual bugs with spelling errors.
 
     Args:
-        element (PageElement):
-        substring (str):
+        element (PageElement): The Tag element that contains the content that
+            should be editable.
+        substring (str): The substring of text that should be the content.
 
     Returns:
         The updated PageElement to be added to a Soup.
