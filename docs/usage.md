@@ -5,7 +5,7 @@
 ### Install `mkdocs-madlibs` as a dependency
 
 `mkdocs-madlibs` must be installed as a Python dependency in the environment used to build or run your MkDocs site.
-`mkdocs-madlibs` is distributed via PyPI and installable via `pip`:
+`mkdocs-madlibs` is distributed via PyPI and is installable via `pip`:
 
 ```bash
 pip install mkdocs-madlibs
@@ -16,7 +16,7 @@ pip install mkdocs-madlibs
 `mkdocs-madlibs` implements a [_custom fence_](https://facelessuser.github.io/pymdown-extensions/extensions/superfences/#custom-fences).
 The custom fence is defined in your `mkdocs.yml` file:
 
-```yaml
+```yaml title="mkdocs.yml"
 markdown_extensions:
   - pymdownx.superfences:
       custom_fences:
@@ -28,14 +28,19 @@ markdown_extensions:
 ### Add custom JavaScript and CSS dependencies
 
 `mkdocs-madlibs` uses custom JavaScript and CSS to style the user inputs of a "Mad Libs" code block.
-These custom JavaScript and CSS dependencies must be defined in your `mkdocs.yml` file:
+These custom JavaScript and CSS dependencies must be added to your documentation directory, and referenced in your `mkdocs.yml` file:
 
-```yaml
+```yaml title="mkdocs.yml"
 extra_javascript:
   - javascripts/extra.js
 extra_css:
   - stylesheets/extra.css
 ```
+
+Copy or download the content for the two files from:
+
+- [extra.css](https://raw.githubusercontent.com/samgaudet/mkdocs-madlibs/main/docs/stylesheets/extra.css)  
+- [extra.js](https://raw.githubusercontent.com/samgaudet/mkdocs-madlibs/main/docs/javascripts/extra.js)
 
 ## Utilization
 
@@ -45,6 +50,8 @@ Within the fenced code, the language to use for highlighting is defined first, f
 Following the language and three tildes (~~~), the code content to display is included.
 `mkdocs-madlibs` uses triple-underscores (affectionately known as '_trunder_ syntax') to denote items that should be a user input.
 
+The following fenced code:
+
 ````
 ```madlibs
 python
@@ -52,3 +59,11 @@ python
 print("Hello, ___NAME___.")
 ```
 ````
+
+Renders this interactive code block when using `mkdocs-madlibs`:
+
+```madlibs
+python
+~~~
+print("Hello, ___NAME___.")
+```
