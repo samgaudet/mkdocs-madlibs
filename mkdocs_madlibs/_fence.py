@@ -1,7 +1,7 @@
 import copy
 import re
 
-from bs4 import BeautifulSoup, PageElement, NavigableString
+from bs4 import BeautifulSoup, NavigableString, Tag
 from pymdownx.highlight import Highlight
 
 TRIPLE_UNDERSCORE = "___"
@@ -14,33 +14,27 @@ SVG_PATH = "M290.7 93.2l128 128-278 278-114.1 12.6C11.4 513.5-1.6 500.6 .1 485.3
 
 
 def prepare_madlibs_element(
-    element: PageElement,
+    element: Tag,
     substring: str,
-) -> PageElement:
+) -> Tag:
     """Prepare the MkDocs Madlibs element, including
     - Strip the element's content of triple underscores.
     - Set the `title` to the Tag as a tooltip for users.
-    - Add the `madlibs-editable` CSS class to the Tag.
+    - Set the CSS `class` to `madlibs-editable` to style the Tag.
     - Set the `contenteditable` attribute to `true` to allow user editing.
     - Set the `onClick` behavior to select all text when clicked.
     - Set `spellcheck` to `false` to avoid visual bugs with spelling errors.
 
     Args:
-        element (PageElement): The element to update to an editable content.
+        element (Tag): The element to update to an editable content.
         substring (str): The input name / placeholder input.
 
     Returns:
-        The updated PageElement to be added to a BeautifulSoup.
+        The updated Tag to be added to a BeautifulSoup.
     """
     element.string = substring.replace(TRIPLE_UNDERSCORE, "")
     element["title"] = f"Edit {substring.replace(TRIPLE_UNDERSCORE, '')}"
-    if getattr(element, "class"):
-        # if there are already CSS classes present:
-        # add list to avoid mutating the underlying list,
-        # which would affect other copies
-        element["class"] = element["class"] + [MADLIBS_EDITABLE_CLASS]
-    else:
-        element["class"] = [MADLIBS_EDITABLE_CLASS]
+    element["class"] = [MADLIBS_EDITABLE_CLASS]
     element["contenteditable"] = "true"
     # select all text on click; stolen from:
     # https://stackoverflow.com/a/3805897
@@ -52,16 +46,16 @@ def prepare_madlibs_element(
 
 def add_pen_svg_to_madlibs_element(
     soup: BeautifulSoup,
-    element: PageElement,
-) -> PageElement:
+    element: Tag,
+) -> Tag:
     """Adds a pen icon as an SVG Tag to the madlibs HTML content.
 
     Args:
         soup (BeautifulSoup): The HTML parsed soup to add the new Tags to.
-        element (PageElement): The element to add an icon to.
+        element (Tag): The element to add an icon to.
 
     Returns:
-        The updated PageElement to be added to a BeautifulSoup.
+        The updated Tag to be added to a BeautifulSoup.
     """
     svg = soup.new_tag(
         name="svg",
@@ -91,6 +85,11 @@ def modify_code_block_html(html: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
     code = soup.find("code")
 
+    # appease mypy's type hinting
+    # exit early if we don't parse a Tag
+    if isinstance(code, NavigableString) or not code:
+        return html
+
     for element in code.contents:
         if isinstance(
             element, NavigableString
@@ -116,7 +115,8 @@ def modify_code_block_html(html: str) -> str:
             element.extract()
 
         elif (
-            element.name == "span"
+            isinstance(element, Tag)
+            and element.name == "span"
             and element.string
             and TRIPLE_UNDERSCORE_WORD_PATTERN.search(element.string)
         ):
