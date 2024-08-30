@@ -13,6 +13,4 @@ beautifulsoup4==4.12.3
 pymdown-extensions==10.9
 
 # extra pins
-# mkdocs-git-committers-plugin-2==2.3.0
-# mkdocs-git-revision-date-localized-plugin==1.2.7
-mkdocs-material==9.5.33
+# mkdocs-material==9.5.33
