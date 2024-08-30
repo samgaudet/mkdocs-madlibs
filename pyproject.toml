@@ -17,6 +17,7 @@ keywords = ["mkdocs", "madlibs", "template", "snippets"]
 dynamic = ["version"]
 dependencies = [
     "beautifulsoup4",
+    "mkdocs-material",
     "pymdown-extensions",
 ]
 classifiers = [

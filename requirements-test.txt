@@ -10,7 +10,5 @@ types-beautifulsoup4==4.12.0.20240511
 
 # package requirements
 beautifulsoup4==4.12.3
+mkdocs-material==9.5.33
 pymdown-extensions==10.9
-
-# extra pins
-# mkdocs-material==9.5.33
