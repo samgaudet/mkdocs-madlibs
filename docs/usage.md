@@ -35,7 +35,7 @@ extra_css:
   - stylesheets/extra.css
 ```
 
-Copy or download the content the CSS file here:
+Copy or download the content of the CSS file here:
 [**extra.css**](https://raw.githubusercontent.com/samgaudet/mkdocs-madlibs/main/docs/stylesheets/extra.css).
 
 ## Utilization
