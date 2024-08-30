@@ -7,6 +7,10 @@ from pymdownx.highlight import Highlight
 TRIPLE_UNDERSCORE = "___"
 TRIPLE_UNDERSCORE_WORD_PATTERN = re.compile(r"(___.*?___)")
 MADLIBS_EDITABLE_CLASS = "madlibs-editable"
+MADLIBS_EDITABLE_ICON_CLASS = "madlibs-editable-icon"
+# source from Font Awesome here:
+# https://fontawesome.com/icons/pen?f=classic&s=solid
+SVG_PATH = "M290.7 93.2l128 128-278 278-114.1 12.6C11.4 513.5-1.6 500.6 .1 485.3l12.7-114.2 277.9-277.9zm207.2-19.1l-60.1-60.1c-18.8-18.8-49.2-18.8-67.9 0l-56.6 56.6 128 128 56.6-56.6c18.8-18.8 18.8-49.2 0-67.9z"  # noqa: E501
 
 
 def prepare_madlibs_element(
@@ -97,6 +101,18 @@ def modify_code_block_html(html: str) -> str:
                     duplicated_span = prepare_madlibs_element(
                         duplicated_span, substring
                     )
+                    svg = soup.new_tag(
+                        name="svg",
+                        xmlns="http://www.w3.org/2000/svg",
+                        viewBox="0 0 512 512",
+                        **{"class": MADLIBS_EDITABLE_ICON_CLASS},
+                    )
+                    svg_path = soup.new_tag(
+                        name="path",
+                        d=SVG_PATH,
+                    )
+                    svg.append(svg_path)
+                    duplicated_span.append(svg)
                 else:
                     duplicated_span.string = substring
 
