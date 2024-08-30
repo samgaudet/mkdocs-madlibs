@@ -29,3 +29,12 @@ Once you have made changes, start up the documentation locally to test changes:
 ```bash
 python -m mkdocs serve
 ```
+
+## Ensure your changes meet the repository's quality requirements
+
+Pull requests must pass the test steps defined in the
+[`test.yml` GitHub Action](https://github.com/samgaudet/mkdocs-madlibs/blob/main/.github/workflows/test.yml).
+To make your development easier, install the requirements in
+[`requirements-test.txt`](https://github.com/samgaudet/mkdocs-madlibs/blob/main/requirements-test.txt)
+that are used by the GitHub Action,
+and run the linting, formatting, and testing steps locally before creating a pull request.
