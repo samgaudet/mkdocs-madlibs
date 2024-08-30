@@ -27,20 +27,16 @@ markdown_extensions:
 
 ### Add custom JavaScript and CSS dependencies
 
-`mkdocs-madlibs` uses custom JavaScript and CSS to style the user inputs of a "Mad Libs" code block.
-These custom JavaScript and CSS dependencies must be added to your documentation directory, and referenced in your `mkdocs.yml` file:
+`mkdocs-madlibs` uses custom CSS to style the user inputs of a "Mad Libs" code block.
+The custom CSS dependencies must be added to your documentation directory, and referenced in your `mkdocs.yml` file:
 
 ```yaml title="mkdocs.yml"
-extra_javascript:
-  - javascripts/extra.js
 extra_css:
   - stylesheets/extra.css
 ```
 
-Copy or download the content for the two files from:
-
-- [extra.css](https://raw.githubusercontent.com/samgaudet/mkdocs-madlibs/main/docs/stylesheets/extra.css)  
-- [extra.js](https://raw.githubusercontent.com/samgaudet/mkdocs-madlibs/main/docs/javascripts/extra.js)
+Copy or download the content of the CSS file here:
+[**extra.css**](https://raw.githubusercontent.com/samgaudet/mkdocs-madlibs/main/docs/stylesheets/extra.css).
 
 ## Utilization
 

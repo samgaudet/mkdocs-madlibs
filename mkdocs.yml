@@ -26,8 +26,6 @@ theme:
 nav:
   - Home: index.md
   - Usage: usage.md
-extra_javascript:
-  - javascripts/extra.js
 extra_css:
   - stylesheets/extra.css
 markdown_extensions:
