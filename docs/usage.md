@@ -25,7 +25,7 @@ markdown_extensions:
           format: !!python/name:mkdocs_madlibs.fence
 ```
 
-### Add custom JavaScript and CSS dependencies
+### Add custom CSS dependency
 
 `mkdocs-madlibs` uses custom CSS to style the user inputs of a "Mad Libs" code block.
 The custom CSS dependencies must be added to your documentation directory, and referenced in your `mkdocs.yml` file:
