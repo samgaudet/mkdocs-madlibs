@@ -180,6 +180,8 @@ def fence(
         classes=[f"language-{_language}.highlight"],
     )
 
+    print(code_block)
+
     modified_html = modify_code_block_html(code_block)
 
     return modified_html
