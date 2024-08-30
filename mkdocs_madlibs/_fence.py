@@ -26,11 +26,11 @@ def prepare_madlibs_element(
     - Set `spellcheck` to `false` to avoid visual bugs with spelling errors.
 
     Args:
-        element (PageElement):
-        substring (str):
+        element (PageElement): The element to update to an editable content.
+        substring (str): The input name / placeholder input.
 
     Returns:
-        The updated PageElement to be added to a Soup.
+        The updated PageElement to be added to a BeautifulSoup.
     """
     element.string = substring.replace(TRIPLE_UNDERSCORE, "")
     element["title"] = f"Edit {substring.replace(TRIPLE_UNDERSCORE, '')}"
@@ -46,6 +46,35 @@ def prepare_madlibs_element(
     # https://stackoverflow.com/a/3805897
     element["onClick"] = "document.execCommand('selectAll',false,null)"
     element["spellcheck"] = "false"
+
+    return element
+
+
+def add_pen_svg_to_madlibs_element(
+    soup: BeautifulSoup,
+    element: PageElement,
+) -> PageElement:
+    """Adds a pen icon as an SVG Tag to the madlibs HTML content.
+
+    Args:
+        soup (BeautifulSoup): The HTML parsed soup to add the new Tags to.
+        element (PageElement): The element to add an icon to.
+
+    Returns:
+        The updated PageElement to be added to a BeautifulSoup.
+    """
+    svg = soup.new_tag(
+        name="svg",
+        xmlns="http://www.w3.org/2000/svg",
+        viewBox="0 0 512 512",
+        **{"class": MADLIBS_EDITABLE_ICON_CLASS},
+    )
+    svg_path = soup.new_tag(
+        name="path",
+        d=SVG_PATH,
+    )
+    svg.append(svg_path)
+    element.append(svg)
 
     return element
 
@@ -75,6 +104,7 @@ def modify_code_block_html(html: str) -> str:
                 if substring and substring.startswith(TRIPLE_UNDERSCORE):
                     new_span = soup.new_tag("span")
                     new_span = prepare_madlibs_element(new_span, substring)
+                    new_span = add_pen_svg_to_madlibs_element(soup, new_span)
                     element.insert_after(new_span)
                 elif substring:
                     new_element = NavigableString(substring)
@@ -101,18 +131,9 @@ def modify_code_block_html(html: str) -> str:
                     duplicated_span = prepare_madlibs_element(
                         duplicated_span, substring
                     )
-                    svg = soup.new_tag(
-                        name="svg",
-                        xmlns="http://www.w3.org/2000/svg",
-                        viewBox="0 0 512 512",
-                        **{"class": MADLIBS_EDITABLE_ICON_CLASS},
+                    duplicated_span = add_pen_svg_to_madlibs_element(
+                        soup, duplicated_span
                     )
-                    svg_path = soup.new_tag(
-                        name="path",
-                        d=SVG_PATH,
-                    )
-                    svg.append(svg_path)
-                    duplicated_span.append(svg)
                 else:
                     duplicated_span.string = substring
 
