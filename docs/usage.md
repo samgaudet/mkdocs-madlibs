@@ -63,3 +63,26 @@ python
 ~~~
 print("Hello, ___NAME___.")
 ```
+
+### Underscore alternative
+
+Occasionally, escaping a Mad Libs word with underscores is not possible if the word is surrounded by one or more underscores.
+In these instances, surround the word to replace with three carets (^^^) instead.
+
+The following fenced code:
+
+````
+```madlibs
+text
+~~~
+hello_my_name_is_^^^NAME^^^
+```
+````
+
+Renders this interactive code block when using `mkdocs-madlibs`:
+
+```madlibs
+text
+~~~
+hello_my_name_is_^^^NAME^^^
+```
