@@ -4,8 +4,9 @@ import re
 from bs4 import BeautifulSoup, NavigableString, Tag
 from pymdownx.highlight import Highlight
 
-TRIPLE_UNDERSCORE = "___"
-TRIPLE_UNDERSCORE_WORD_PATTERN = re.compile(r"(___.*?___)")
+MADLIBS_PATTERN = re.compile(
+    r"(?P<full_match>(?P<opening_chars>___|\^\^\^).*?(?P<closing_chars>___|\^\^\^))"
+)
 MADLIBS_EDITABLE_CLASS = "madlibs-editable"
 MADLIBS_EDITABLE_ICON_CLASS = "madlibs-editable-icon"
 # source from Font Awesome here:
@@ -16,9 +17,10 @@ SVG_PATH = "M290.7 93.2l128 128-278 278-114.1 12.6C11.4 513.5-1.6 500.6 .1 485.3
 def prepare_madlibs_element(
     element: Tag,
     substring: str,
+    match: re.Match,
 ) -> Tag:
     """Prepare the MkDocs Madlibs element, including
-    - Strip the element's content of triple underscores.
+    - Strip the element's content of opening and closing characters.
     - Set the `title` to the Tag as a tooltip for users.
     - Set the CSS `class` to `madlibs-editable` to style the Tag.
     - Set the `contenteditable` attribute to `true` to allow user editing.
@@ -28,12 +30,16 @@ def prepare_madlibs_element(
     Args:
         element (Tag): The element to update to an editable content.
         substring (str): The input name / placeholder input.
+        match (Match): The REGEX Match object.
 
     Returns:
         The updated Tag to be added to a BeautifulSoup.
     """
-    element.string = substring.replace(TRIPLE_UNDERSCORE, "")
-    element["title"] = f"Edit {substring.replace(TRIPLE_UNDERSCORE, '')}"
+    cleaned_content = substring.replace(match["opening_chars"], "").replace(
+        match["closing_chars"], ""
+    )
+    element.string = cleaned_content
+    element["title"] = f"Edit {cleaned_content}"
     element["class"] = [MADLIBS_EDITABLE_CLASS]
     element["contenteditable"] = "true"
     # select all text on click; stolen from:
@@ -91,18 +97,21 @@ def modify_code_block_html(html: str) -> str:
         return html
 
     for element in code.contents:
-        if isinstance(
-            element, NavigableString
-        ) and TRIPLE_UNDERSCORE_WORD_PATTERN.search(element):
-            substrings = TRIPLE_UNDERSCORE_WORD_PATTERN.split(element)
+        if isinstance(element, NavigableString):
+            match = MADLIBS_PATTERN.search(element)
+
+            if not match:
+                continue
+
+            substrings = element.partition(match["full_match"])
 
             # iterate over the reversed list of substrings
             # so they are added 'in order' when using `insert_after`
             for substring in reversed(substrings):
                 # annoyingly, we have to check for empty substrings
-                if substring and substring.startswith(TRIPLE_UNDERSCORE):
+                if substring and substring.startswith(match["opening_chars"]):
                     new_span = soup.new_tag("span")
-                    new_span = prepare_madlibs_element(new_span, substring)
+                    new_span = prepare_madlibs_element(new_span, substring, match)
                     new_span = add_pen_svg_to_madlibs_element(soup, new_span)
                     element.insert_after(new_span)
                 elif substring:
@@ -114,22 +123,22 @@ def modify_code_block_html(html: str) -> str:
             # remove the original span that has been split
             element.extract()
 
-        elif (
-            isinstance(element, Tag)
-            and element.name == "span"
-            and element.string
-            and TRIPLE_UNDERSCORE_WORD_PATTERN.search(element.string)
-        ):
-            substrings = TRIPLE_UNDERSCORE_WORD_PATTERN.split(element.string)
+        elif isinstance(element, Tag) and element.name == "span" and element.string:
+            match = MADLIBS_PATTERN.search(element.string)
+
+            if not match:
+                continue
+
+            substrings = element.string.partition(match["full_match"])
 
             # iterate over the reversed list of substrings
             # so they are added 'in order' when using `insert_after`
             for substring in reversed(substrings):
                 duplicated_span = copy.copy(element)
 
-                if substring.startswith(TRIPLE_UNDERSCORE):
+                if substring.startswith(match["opening_chars"]):
                     duplicated_span = prepare_madlibs_element(
-                        duplicated_span, substring
+                        duplicated_span, substring, match
                     )
                     duplicated_span = add_pen_svg_to_madlibs_element(
                         soup, duplicated_span
