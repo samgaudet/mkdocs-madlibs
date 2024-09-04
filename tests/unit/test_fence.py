@@ -1,12 +1,7 @@
 import pytest
 from bs4 import BeautifulSoup
 
-from mkdocs_madlibs._fence import (
-    SVG_PATH,
-    add_pen_svg_to_madlibs_element,
-    fence,
-    prepare_madlibs_element,
-)
+from mkdocs_madlibs._fence import fence
 
 BASIC_HTML_DOCUMENT = """
 <!DOCTYPE html>
@@ -18,11 +13,17 @@ BASIC_HTML_DOCUMENT = """
 
 BASIC_TAG_STRING = "___NAME___"
 
-BASIC_CODE_BLOCK_MARKDOWN = """
+BASIC_CODE_BLOCK_MARKDOWN__UNDERSCORES = """
 python
 ~~~
 print("Hello, ___NAME___.")
 """
+BASIC_CODE_BLOCK_MARKDOWN__CURLY_BRACKETS = """
+python
+~~~
+print("Hello, ^^^NAME^^^.")
+"""
+
 BASIC_CODE_BLOCK_HTML = """
   <div class="language-python.highlight highlight">
    <pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">"Hello, </span><span class="madlibs-editable" contenteditable="true" onclick="document.execCommand('selectAll',false,null)" spellcheck="false" title="Edit NAME">NAME<svg class="madlibs-editable-icon" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M290.7 93.2l128 128-278 278-114.1 12.6C11.4 513.5-1.6 500.6 .1 485.3l12.7-114.2 277.9-277.9zm207.2-19.1l-60.1-60.1c-18.8-18.8-49.2-18.8-67.9 0l-56.6 56.6 128 128 56.6-56.6c18.8-18.8 18.8-49.2 0-67.9z"></path></svg></span><span class="s2">."</span><span class="p">)</span>
@@ -63,43 +64,11 @@ PLAIN_TEXT_CODE_BLOCK_HTML = """
 """
 
 
-def test_prepare_madlibs_element():
-    """Basic test for updating span attributes for editable content."""
-    soup = BeautifulSoup(BASIC_HTML_DOCUMENT, "html.parser")
-
-    new_span = soup.new_tag("span")
-    new_span.string = BASIC_TAG_STRING
-    new_span = prepare_madlibs_element(new_span, BASIC_TAG_STRING)
-
-    assert new_span["class"] == ["madlibs-editable"]
-    assert new_span["contenteditable"] == "true"
-    assert new_span["onClick"] == "document.execCommand('selectAll',false,null)"
-    assert new_span["spellcheck"] == "false"
-    assert new_span["title"] == f"Edit {BASIC_TAG_STRING.replace('___', '')}"
-
-
-def test_add_pen_svg_to_madlibs_element():
-    """Basic test for adding the SVG Tag to the span Tag."""
-    soup = BeautifulSoup(BASIC_HTML_DOCUMENT, "html.parser")
-
-    new_span = soup.new_tag("span")
-    new_span.string = BASIC_TAG_STRING
-    new_span = prepare_madlibs_element(new_span, BASIC_TAG_STRING)
-    new_span = add_pen_svg_to_madlibs_element(soup, new_span)
-
-    svg = new_span.find("svg")
-    path = svg.find("path")
-
-    assert svg["class"] == ["madlibs-editable-icon"]
-    assert svg["viewBox"] == "0 0 512 512"
-    assert svg["xmlns"] == "http://www.w3.org/2000/svg"
-    assert path["d"] == SVG_PATH
-
-
 @pytest.mark.parametrize(
     argnames=["test_markdown", "test_html"],
     argvalues=[
-        (BASIC_CODE_BLOCK_MARKDOWN, BASIC_CODE_BLOCK_HTML),
+        (BASIC_CODE_BLOCK_MARKDOWN__UNDERSCORES, BASIC_CODE_BLOCK_HTML),
+        (BASIC_CODE_BLOCK_MARKDOWN__CURLY_BRACKETS, BASIC_CODE_BLOCK_HTML),
         (MULTI_INPUT_CODE_BLOCK_MARKDOWN, MULTI_INPUT_CODE_BLOCK_HTML),
         (PLAIN_TEXT_CODE_BLOCK_MARKDOWN, PLAIN_TEXT_CODE_BLOCK_HTML),
     ],
