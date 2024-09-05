@@ -5,7 +5,7 @@
 ### Install `mkdocs-madlibs` as a dependency
 
 `mkdocs-madlibs` must be installed as a Python dependency in the environment used to build or run your MkDocs site.
-`mkdocs-madlibs` is distributed via PyPI and installable via `pip`:
+`mkdocs-madlibs` is distributed via PyPI and is installable via `pip`:
 
 ```bash
 pip install mkdocs-madlibs
@@ -16,7 +16,7 @@ pip install mkdocs-madlibs
 `mkdocs-madlibs` implements a [_custom fence_](https://facelessuser.github.io/pymdown-extensions/extensions/superfences/#custom-fences).
 The custom fence is defined in your `mkdocs.yml` file:
 
-```yaml
+```yaml title="mkdocs.yml"
 markdown_extensions:
   - pymdownx.superfences:
       custom_fences:
@@ -25,17 +25,18 @@ markdown_extensions:
           format: !!python/name:mkdocs_madlibs.fence
 ```
 
-### Add custom JavaScript and CSS dependencies
+### Add custom CSS dependency
 
-`mkdocs-madlibs` uses custom JavaScript and CSS to style the user inputs of a "Mad Libs" code block.
-These custom JavaScript and CSS dependencies must be defined in your `mkdocs.yml` file:
+`mkdocs-madlibs` uses custom CSS to style the user inputs of a "Mad Libs" code block.
+The custom CSS dependencies must be added to your documentation directory, and referenced in your `mkdocs.yml` file:
 
-```yaml
-extra_javascript:
-  - javascripts/extra.js
+```yaml title="mkdocs.yml"
 extra_css:
   - stylesheets/extra.css
 ```
+
+Copy or download the content of the CSS file here:
+[**extra.css**](https://raw.githubusercontent.com/samgaudet/mkdocs-madlibs/main/docs/stylesheets/extra.css).
 
 ## Utilization
 
@@ -45,6 +46,8 @@ Within the fenced code, the language to use for highlighting is defined first, f
 Following the language and three tildes (~~~), the code content to display is included.
 `mkdocs-madlibs` uses triple-underscores (affectionately known as '_trunder_ syntax') to denote items that should be a user input.
 
+The following fenced code:
+
 ````
 ```madlibs
 python
@@ -52,3 +55,34 @@ python
 print("Hello, ___NAME___.")
 ```
 ````
+
+Renders this interactive code block when using `mkdocs-madlibs`:
+
+```madlibs
+python
+~~~
+print("Hello, ___NAME___.")
+```
+
+### Underscore alternative
+
+Occasionally, escaping a Mad Libs word with underscores is not possible if the word is surrounded by one or more underscores.
+In these instances, surround the word to replace with three carets (^^^) instead.
+
+The following fenced code:
+
+````
+```madlibs
+text
+~~~
+hello_my_name_is_^^^NAME^^^
+```
+````
+
+Renders this interactive code block when using `mkdocs-madlibs`:
+
+```madlibs
+text
+~~~
+hello_my_name_is_^^^NAME^^^
+```
