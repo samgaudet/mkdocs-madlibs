@@ -30,6 +30,8 @@ nav:
   - Support: support.md
 extra_css:
   - stylesheets/extra.css
+extra_javascript:
+  - javascripts/extra.js
 plugins:
   - git-committers:
       repository: samgaudet/mkdocs-madlibs
