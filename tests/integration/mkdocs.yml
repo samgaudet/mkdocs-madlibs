@@ -1,0 +1,25 @@
+site_name: "MkDocs Mad Libs Test Site"
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - content.code.copy
+nav:
+  - Home: index.md
+extra_css:
+  - stylesheets/extra.css
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: madlibs
+          class: madlibs
+          format: !!python/name:mkdocs_madlibs.fence
