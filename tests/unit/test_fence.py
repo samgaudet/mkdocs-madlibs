@@ -91,3 +91,23 @@ def test_fence(test_markdown: str, test_html: str):
     generated_html.body.append(BeautifulSoup(html, "html.parser"))  # type: ignore
 
     assert expected_html.prettify() == generated_html.prettify()
+
+
+def test_fence__with_title_attr():
+    """Test the fence functionality with a title attribute specified."""
+    TEST_TITLE = "This is a test title"
+
+    html = fence(
+        source=BASIC_CODE_BLOCK_MARKDOWN__UNDERSCORES,
+        language=None,
+        css_class=None,
+        options=None,
+        md=None,
+        attrs={"title": TEST_TITLE},
+    )
+
+    generated_html = BeautifulSoup(BASIC_HTML_DOCUMENT, "html.parser")
+    generated_html.body.append(BeautifulSoup(html, "html.parser"))  # type: ignore
+
+    title_divs = generated_html.find_all(name="span", attrs={"class": "filename"})
+    assert title_divs[0].text.strip() == TEST_TITLE
