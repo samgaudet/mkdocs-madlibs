@@ -86,3 +86,28 @@ text
 ~~~
 hello_my_name_is_^^^NAME^^^
 ```
+
+### Adding a title
+
+MkDocs Mad Libs supports [adding titles](https://squidfunk.github.io/mkdocs-material/reference/code-blocks/#adding-a-title).
+However, attributes are only passed to the MkDocs Mad Libs formatter if an attribute style header is used.
+In order to use an attribute style header, you must first enable the
+[_Attribute Lists_ extension](https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#attribute-lists).
+
+The following fenced code:
+
+````md
+```{.madlibs title="Hello world example"}
+python
+~~~
+print("Hello, ___NAME___.")
+```
+````
+
+Renders this interactive code block when using `mkdocs-madlibs`:
+
+```{.madlibs title="Hello world example"}
+python
+~~~
+print("Hello, ___NAME___.")
+```
