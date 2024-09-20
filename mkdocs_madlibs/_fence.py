@@ -181,12 +181,15 @@ def fence(
 
     _language = parsed_source[0].strip()
     _source = parsed_source[1].strip()
+    _title = attrs.get("title", None) if attrs else None
 
     highlighter = Highlight()
+
     code_block = highlighter.highlight(
         src=_source,
         language=_language,
         classes=[f"language-{_language}.highlight"],
+        title=_title,
     )
 
     modified_html = modify_code_block_html(code_block)
