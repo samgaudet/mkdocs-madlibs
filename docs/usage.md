@@ -111,3 +111,36 @@ python
 ~~~
 print("Hello, ___NAME___.")
 ```
+
+### Highlighting specific lines
+
+MkDocs Mad Libs supports [highlighting specific lines](https://squidfunk.github.io/mkdocs-material/reference/code-blocks/#highlighting-specific-lines).
+However, attributes are only passed to the MkDocs Mad Libs formatter if an attribute style header is used.
+In order to use an attribute style header, you must first enable the
+[_Attribute Lists_ extension](https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#attribute-lists).
+
+The following fenced code:
+
+````md
+```{.madlibs hl_lines="1-2 5"}
+python
+~~~
+def greet(name: str) -> None:
+    print(f"Hello, {name}.")
+
+if __name__ == "__main__":
+    greet("___NAME___")
+```
+````
+
+Renders this interactive code block when using `mkdocs-madlibs`:
+
+```{.madlibs hl_lines="1-2 5"}
+python
+~~~
+def greet(name: str) -> None:
+    print(f"Hello, {name}.")
+
+if __name__ == "__main__":
+    greet("___NAME___")
+```

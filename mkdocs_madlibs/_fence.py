@@ -1,5 +1,6 @@
 import copy
 import re
+from typing import List
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 from pymdownx.highlight import Highlight
@@ -123,6 +124,7 @@ def modify_code_block_html(html: str) -> str:
             # remove the original span that has been split
             element.extract()
 
+        # if the span has content, check the content of the span
         elif isinstance(element, Tag) and element.name == "span" and element.string:
             match = MADLIBS_PATTERN.search(element.string)
 
@@ -150,11 +152,86 @@ def modify_code_block_html(html: str) -> str:
 
             # remove the original span that has been split
             element.extract()
+
+        # if the span does not have content, search for other spans with content
+        elif isinstance(element, Tag) and element.name == "span" and not element.string:
+            for span in element.find_all("span"):
+                match = MADLIBS_PATTERN.search(span.string)
+
+                if not match:
+                    continue
+
+                substrings = span.string.partition(match["full_match"])
+
+                # iterate over the reversed list of substrings
+                # so they are added 'in order' when using `insert_after`
+                for substring in reversed(substrings):
+                    duplicated_span = copy.copy(span)
+
+                    if substring.startswith(match["opening_chars"]):
+                        duplicated_span = prepare_madlibs_element(
+                            duplicated_span, substring, match
+                        )
+                        duplicated_span = add_pen_svg_to_madlibs_element(
+                            soup, duplicated_span
+                        )
+                    else:
+                        duplicated_span.string = substring
+
+                    span.insert_after(duplicated_span)
+
+                # remove the original span that has been split
+                span.extract()
+
         else:
             pass
 
     modified_html = str(soup.prettify())
     return modified_html
+
+
+def prepare_hl_lines(hl_lines: str, line_count: int) -> List[int]:
+    """Prepare the code block lines to highlight.
+    This replaces the `parse_hl_lines` function in:
+    https://github.com/facelessuser/pymdown-extensions/blob/main/pymdownx/superfences.py
+
+    Args:
+        hl_lines (str): The hl_lines attribute.
+        line_count (int): The number of lines in the code snippet.
+
+    Returns:
+        The line numbers to highlight, as a list of strings.
+    """
+
+    def normalize_hl_lines_range(line_index: int, line_count: int) -> int:
+        """Restrict the max line number to the line_count plus one.
+
+        Args:
+            line_index (int): The line index.
+            line_count (int): The total line count.
+
+        Returns:
+            The modified line index as an integer.
+        """
+        if line_index < 1:
+            line_index = 0
+        elif line_index > line_count:
+            line_index = line_count + 1
+        return line_index
+
+    prepared_hl_lines: List[int] = []
+    for lines in hl_lines.split():
+        line_range: List[int] = [
+            normalize_hl_lines_range(int(split_lines), line_count)
+            for split_lines in lines.split("-")
+        ]
+        if len(line_range) > 1:
+            if line_range[0] <= line_range[1]:
+                prepared_hl_lines.extend(list(range(line_range[0], line_range[1] + 1)))
+        elif 1 <= line_range[0] <= line_count:
+            prepared_hl_lines.extend(line_range)
+
+    return prepared_hl_lines
 
 
 def fence(
@@ -181,15 +258,21 @@ def fence(
 
     _language = parsed_source[0].strip()
     _source = parsed_source[1].strip()
-    _title = attrs.get("title", None) if attrs else None
+    title = attrs.get("title", None) if attrs else None
+    hl_lines = attrs.get("hl_lines", None) if attrs else None
+
+    if hl_lines:
+        line_count = _source.count("\n") + 1
+        prepared_hl_lines = prepare_hl_lines(hl_lines=hl_lines, line_count=line_count)
 
     highlighter = Highlight()
 
     code_block = highlighter.highlight(
         src=_source,
         language=_language,
+        hl_lines=prepared_hl_lines if hl_lines else hl_lines,
         classes=[f"language-{_language}.highlight"],
-        title=_title,
+        title=title,
     )
 
     modified_html = modify_code_block_html(code_block)

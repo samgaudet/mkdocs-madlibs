@@ -111,3 +111,23 @@ def test_fence__with_title_attr():
 
     title_divs = generated_html.find_all(name="span", attrs={"class": "filename"})
     assert title_divs[0].text.strip() == TEST_TITLE
+
+
+def test_fence__with_hl_lines_attr():
+    """Test the fence functionality with line highlighting attributes specified."""
+    HL_LINES = "1 3-5"
+
+    html = fence(
+        source=MULTI_INPUT_CODE_BLOCK_MARKDOWN,
+        language=None,
+        css_class=None,
+        options=None,
+        md=None,
+        attrs={"hl_lines": HL_LINES},
+    )
+
+    generated_html = BeautifulSoup(BASIC_HTML_DOCUMENT, "html.parser")
+    generated_html.body.append(BeautifulSoup(html, "html.parser"))  # type: ignore
+
+    title_divs = generated_html.find_all(name="span", attrs={"class": "hll"})
+    assert len(title_divs) == 4
