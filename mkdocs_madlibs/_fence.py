@@ -27,6 +27,7 @@ def prepare_madlibs_element(
     - Set the `contenteditable` attribute to `true` to allow user editing.
     - Set the `onClick` behavior to select all text when clicked.
     - Set `spellcheck` to `false` to avoid visual bugs with spelling errors.
+    - Set `data-original-text` to the original content to enable variable syncing.
 
     Args:
         element (Tag): The element to update to an editable content.
@@ -47,6 +48,8 @@ def prepare_madlibs_element(
     # https://stackoverflow.com/a/3805897
     element["onClick"] = "document.execCommand('selectAll',false,null)"
     element["spellcheck"] = "false"
+    # inventory the original content for event listener use
+    element["data-original-text"] = cleaned_content
 
     return element
 
