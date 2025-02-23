@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-02-22
+### Changed
+- A new feature (in [#21](https://github.com/samgaudet/mkdocs-madlibs/issues/21)) is added to support easier `EventListener` usage to sync variables.
+
+### Fixed
+- N/A
+
 ## [1.2.2] - 2024-10-01
 ### Changed
 - A new feature is added to support code block line highlighting.
