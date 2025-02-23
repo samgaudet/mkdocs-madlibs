@@ -18,6 +18,70 @@ and `.madlibs-editable-icon` applies to the pen SVG icon adjacent to the text.
 Use the default styling as a reference for defining your own styling:
 [**extra.css**](https://github.com/samgaudet/mkdocs-madlibs/blob/main/docs/stylesheets/extra.css).
 
+## Syncing variables
+
+MkDocs Mad Libs adds a `data-original-content` [data-* attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*)
+that can be used in a JavaScript `EventListener` to sync inputs within a document that share a variable name.
+
+### Add custom Javascript dependency
+
+Follow the general `mkdocs-material` instructions for
+[adding custom JavaScript](https://squidfunk.github.io/mkdocs-material/customization/#additional-javascript).
+
+```yaml title="mkdocs.yml"
+extra_javascript:
+    - javascripts/extra.js
+```
+
+### Add an event listener
+
+Using the `data-original-content` attribute that is added to all mad Libs content,
+you can add an event listener to sync variables that share the same original content:
+
+```js title="extra.js"
+document.addEventListener("input", function (event) {
+    // Check if the event target has the "madlibs-editable" class
+    if (event.target.classList.contains("madlibs-editable")) {
+        const updatedText = event.target.textContent.trim();
+        const originalText = event.target.getAttribute("data-original-text");
+
+        // Update all other elements with the same original text
+        if (originalText) {
+            const elements = document.querySelectorAll(
+                `.madlibs-editable[data-original-text="${originalText}"]`
+            );
+            elements.forEach((el) => {
+                if (el !== event.target) {
+                    // Update only the text content while keeping the SVG intact
+                    const svgElement = el.querySelector("svg");
+                    const textNode = [...el.childNodes].find(node => node.nodeType === Node.TEXT_NODE);
+
+                    if (textNode) {
+                        textNode.textContent = updatedText;
+                    } else {
+                        el.insertBefore(document.createTextNode(updatedText), svgElement);
+                    }
+                }
+            });
+        }
+    }
+});
+```
+
+!!! note
+    This example `EventListener` is provided courtesy of [_Paweł Krupa_ :simple-github:](https://github.com/paulfantom).
+
+#### Example usage
+
+Using the `EventListener` above syncs inputs that share a name,
+such as in this example:
+
+```madlibs
+python
+~~~
+print("If you edit me ___HERE___, you will also update me ___HERE___!")
+```
+
 ## Controlling user inputs
 
 MkDocs Mad Libs uses the `contenteditable` HTML attribute to make code snippets editable.

@@ -31,3 +31,32 @@ for (i = 0; i < madlibsEditableContent.length; i++) {
         };
     });
 };
+
+
+document.addEventListener("input", function (event) {
+    // Check if the event target has the "madlibs-editable" class
+    if (event.target.classList.contains("madlibs-editable")) {
+        const updatedText = event.target.textContent.trim();
+        const originalText = event.target.getAttribute("data-original-text");
+
+        // Update all other elements with the same original text
+        if (originalText) {
+            const elements = document.querySelectorAll(
+                `.madlibs-editable[data-original-text="${originalText}"]`
+            );
+            elements.forEach((el) => {
+                if (el !== event.target) {
+                    // Update only the text content while keeping the SVG intact
+                    const svgElement = el.querySelector("svg");
+                    const textNode = [...el.childNodes].find(node => node.nodeType === Node.TEXT_NODE);
+
+                    if (textNode) {
+                        textNode.textContent = updatedText;
+                    } else {
+                        el.insertBefore(document.createTextNode(updatedText), svgElement);
+                    }
+                }
+            });
+        }
+    }
+});
